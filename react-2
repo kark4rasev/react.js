@@ -1,0 +1,59 @@
+import React, {useState, useEffect, useRef} from "my-react-app";
+import './App.css';
+
+function App () {
+    const [messageList, setMessageList ] = useState(initialState: []);
+    const [text, setText] = useState(initialState: '');
+    const [author, setAuthor] = useState(initialState:'');
+
+    /*useEffect(effect:() => {
+        setTimeout(handler:() =>(
+            botAnswer(messageList)
+        ), timeout: 2000)
+    },deps:[messageList])*/
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        setMessageList(value:prevState =>[...prevState,{
+            id:giveLastid(prevState),
+            author,
+            text
+        }])
+    }
+
+    function giveLastid(array){
+        return array.length ? array[array.length -1].id + 1 : 0;
+    }
+
+    function botAnswer() {
+        const lastAuthor = messageList[messageList.length -1];
+        if (lastAuthor && lastAuthor.author) {
+            setMessageList(value:prevState =>[...prevState, {
+                id:giveLastId(prevState),
+                text: `Сообщение автора ${lastAuthor.author} отправлено`
+            }])
+        }
+    }
+
+    return (
+        <div>
+            <form onSubmit={handleSubmit}>
+                <label>текст</label>
+                <input value={text} onChange={(e:ChangeEvent<HTMLInputElement>) =>setText(e.target.value)}/>
+                <label>Автор</label>
+                <input value={author} onChange={(e:ChangeEvent<HTMLInputElement>) =>setText(e.target.value)}/>
+                <button type='submit'>Сообщение</button>
+            </form>
+            {messageList.map((message) => {
+                return (
+                    <div key={message.id}>
+                        {message.author && <p>Автор:{message.author}</p>}
+                        <p>{message.author && <span>Текст:</span>}{message.text}</p>
+                )
+            }
+        </div>
+    )
+
+
+}
