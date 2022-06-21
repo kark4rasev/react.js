@@ -1,0 +1,153 @@
+import React,{useEffect,useRef, useState} from "react";
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import List from '@mui/material/List';
+import {red} from '@mui/material/colors';
+import {ThemeProvider, createTheme} from '@mui/material/styles';
+import {Topography} from "@mui/material/";
+import Chats from "./Chats";
+import Message from "./Message";
+
+const theme = createTheme (options:{
+    palette:{
+        primary:{
+            main:red[500],
+        },
+    },
+});
+
+
+function App() {
+    const [author,setAuthor] = useState (initialState:'');
+    const [message,setMessage] = useState (initialState:'');
+    const [messages, setMessages] = useState (initialState:[]);
+    const [chatlist] = useState (initialState:[
+        {name:"Some chat", id="1"},
+        {name:"Complicated discussion", id="2"},
+        {name:"Descriptions and documentation", id="3"},
+    ]);
+    const inputRef = useRef (initialValue:null);
+
+    const onButtonClick = () => {
+        let newid = 1;
+        if(messages.length > 0) newid = messages[messages.length -1].id + 1;
+        if(author.length > 0) {
+            setMessages(value:messages =>[...messages,{text,message,author:author,id:newid}]);
+        } else {
+            alert("Author name needed")
+        }
+    };
+
+    useEffect(effect:() => {
+        if (messages.length > 0) {
+            setTimeout(handler:() => {
+                alert (author + ", your message sent");
+            }, timeout:1500);
+        };
+        focusTextField(inputRef.current);
+    },deps:[messages,author]);
+
+    function focusTextField(input) {
+        if (input) {
+            input.focus();
+        }    
+   }
+
+   return (
+    <ThemeProvider theme={theme}>
+        <div className="App main">
+            <div className="messagetext">
+                <Topography variant="h5"component="div" color="primary">Chat list</Topography>
+                <List sx={{margin: '10px 0 10px 0', width: '100%',bgcolor:'background.paper'}}>
+                {chatList.map((item:{id:string,name:string})=><Chats name={item.name} key={item.id} />)}
+                </List>
+            </div>
+
+            <div className="messages">
+                <Box
+                    component="form"
+                    sx={{m:1,borderRadius: '10px',gap:'10px', width:'400px',margin:'10px',padding:'16px',background:'rgb(241)'}}
+                    noValidate
+                    autoComplete="off"
+                >
+                    <Topography variant="h5" component="div" color= "primary">Messages</Topography>
+                    <TextField sx={{margin:'10px 0 10px 0'backgroundColor:'#fff'}}
+                        required fullWidth
+                        id="outlined-required"
+                        label="Author name"
+                        value={author} onChange={(e:ChangeEvent<HTMLTextAreaElement) =>setAuthor(e.target.value)}
+                    />
+                    <TextField sx={{margin:'10px 0 10px 0',backgroundColor:'#fff'}}
+                                id = "outlined-multiline-flexible" fullWidth
+                                lebel="Message text"
+                                multiline
+                                maxRows={4}
+                                value={messagetext}
+                                inputRef={inputRef}
+                                onChange={(e:ChangeEvent<HTMLTextAreaElement) => setMessage(e.target.value)}
+                    />
+                    <Button sx={{margin:'10px 0 10px 0'}} variant= "contained"  size="large"  fullWidth onClick={onButtonClick}>Send message</Button> 
+                </Box>
+                {
+                    message.map(item => {
+                        return(
+                            <Message author={item.author} text={item.text} key={item.id}/>
+                        )
+                    })
+                }       
+            </div>    
+        </div>
+    </ThemeProvider>
+  )
+
+}
+
+export default App;
+
+
+import React from 'react';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+
+const Message = ({author, text }) => {
+    return (
+        <div className="messagetext">
+            <Card sx ={{minWidth:275}}>
+                <CardContent>
+                    <Typography variant="h5" component="div" color="primary">{author}:</Typography>
+                    <Typography variant="body2">{text}</Typography>
+                </CardContent>
+            </Card>
+        </div>
+    );
+};
+
+export default Message;
+
+
+import...
+
+export Interface ThemeOptions extends Omit<SystemThemeOptions, 'zIndex'> {
+    mixins?: MixinsOptions;
+    components?:Components<BaseTheme>;
+    palette?: PalleteOptions;
+    shadows?: Shadows;
+    transitions?:TransitionsOptions;
+    typography?:TypographyOptions | ((palette: Palette) => TypographyOptions);
+    zIndex?:ZIndexOptions;
+    unstable_strictMode?:boolean;
+}
+
+interface BaseTheme extends SystemTheme {
+    mixins:Mixins;
+    pallete:Pallete;
+    shadows:Shadows;
+    transitions:Transitions;
+    typography: Typography;
+    zIndex: ZIndex;
+    unstable_strictMode?: boolean;
+}
+
+export{};
