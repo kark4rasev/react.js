@@ -1,0 +1,138 @@
+import React from 'react';
+
+const NotFoundPage = () => {
+    return (
+        <div>
+            Page is not found. Go back to <Link to={'/'}>Home</Link>
+        </div>
+    );
+};
+
+export default NotFoundPage;
+
+
+import './App.css';
+import {Routes,Route} from 'react-router-dom';
+import HomePage from "./pages/HomePage";
+import ProfilePage from "./pages/ProfilePage";
+import ChatPage from "./pages/ChatPage";
+
+function App() {
+    return(
+        <Routes>
+            <Route path={'/'} element={<HomePage/>}/>
+            <Route path={'/chats'} element={<ChatPage/>}/>
+            <Route path={'/profile'} element={<ProfilePage/>}/>
+            <Route path={'*'} element={<NotFoundPage/>}/>
+        </Routes>
+    );
+};
+
+export default App;
+
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+const HomePage = () => {
+    return (
+        <div>
+            Home
+            <Link to={'/chats'}>
+                <h1>
+                    Чаты
+                </h1>
+            </Link>
+            <Link to={'/profile'}>
+                <h1>
+                    Профиль
+                </h1>
+            </Link>
+            
+        </div>
+    );
+};
+
+export default HomePage;
+
+import React from 'react';
+
+const ProfilePage = () => {
+    return (
+        <div>
+            Profile
+        </div>
+    );
+};
+
+export default ProfilePage;
+
+
+
+import React from 'react';
+
+const ChatPage = () => {
+    const[chats, setChats] = useState(initialState:[
+        {
+            id: 1,
+            name: 'антон'
+        },
+        {
+            id: 2,
+            name: 'Дмитрий'
+        },
+        {
+            id: 3,
+            name: 'Павел'
+        },
+
+]);
+const[name,setName] = useState(initialState:'');
+const deleteHandler = (id) =>{
+    const filteredItems = chats.filter((chat:{id:number,name:string}) => chat.id!==id);
+    setChats(filteredItems)    
+}
+
+
+const addHandler = () =>{
+    let random = Math.random()
+    const obj ={
+        id:random,
+        name:name
+    }
+    setChats (value:prevState =>[...prevState,obj])
+}
+    return ( 
+        <div>
+            <input value={name} onChange={(e:ChangeEvent<HTMLInputElement>) =>setName(e.target.value)}/>
+            <button onClick={addHandler}>Добавить</button>
+            {
+                chats.map((chat:{id,number,name:string}) =>(
+                    <div style={{display:'flex'}} key={chats.id}>
+                        <h4>{chats.name}</h4>
+                        <button onClick={()=>deleteHandler(chat.id)}>but</button>
+                    </div>
+                ))
+            }
+        </div>
+    );
+};
+
+export default ChatPage;
+
+
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+import reportWebVitals from './ reportWebVitals';
+import { BrowserRouter } from 'react-router-dom';
+
+const root = ReactDOM.createRoot(document.getElementById(elementid:'root'));
+root.render(
+    <BrowserRouter>
+        <React.StrictMode>
+            <App />
+        </React.StrictMode>
+    </BrowserRouter>
+);
