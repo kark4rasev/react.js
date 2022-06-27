@@ -1,0 +1,129 @@
+import React from 'react';
+import ReactDom from 'react-dom/client';
+import './index.css';
+import App from './App'
+import {createStor} from "redux";
+import {Provider} from "react-redux";
+
+const initialState = {
+    count: 0
+}
+
+const reducer = (state:{count:number} = initialState, action) => {
+    switch(action.type) {
+        case 'plus':
+            return {
+                ...state,
+                count:state.count + 1
+            }
+        case 'minus':
+            return{
+                ...state,
+                count:state.count - 1
+            }
+        case 'reset':
+            return{
+                ...state,
+                count: state.count = 0
+            }
+        default:
+            return state    
+    }
+}
+
+
+const store = createStor(reducer)
+
+const root = ReactDOM.createRoot(document.getElementById(elementid:'root'));
+root.render(
+    <Provider store={store}>
+        <React.StrictMode>
+            <App />
+        </React.StrictMode>
+    </Provider>
+)
+
+
+
+
+
+import {userSelector} from "react-redux";
+
+function App() {
+    const count = useSelector(selector:state =>state.count);
+    const dispatch = useDispatch();
+
+    
+    const increase = () => {
+        dispatch(action: {type: 'plus'})
+    }
+
+    const decrease = () => {
+        dispatch(action: {type: 'minus'})
+    }
+
+    const reset = () => {
+        dispatch(action: {type: 'reset'})
+    }
+
+
+
+
+    return (
+        <div>
+        <button onClick={increase}>+</button>
+        <div>{count}</div>
+        <button onClick={decrease}>-</button>
+        <button onClick={reset}>Reset</button>
+        </div>
+    );
+}
+
+export default App;
+
+
+import React, {Component} from 'react';
+import CounterApp from './CounterApp'
+
+class App extends Component {
+  render() {
+    return (
+      <CounterApp/>
+    );
+  }
+}
+
+export default App;
+
+
+import React, {Component} from 'react';
+
+class CounterApp extends Component {
+  state = {
+    counter: 0
+  };
+
+  handleIncrement = () => {
+    this.setState(prevState => ({
+      counter: prevState.counter + 1
+    }))
+  };
+
+  handleDecrement = () => {
+    this.setState(prevState => ({
+      counter: prevState.counter - 1
+    }))
+  };
+
+  render() {
+    return (
+      <div>
+        <button onClick={this.handleIncrement}>Increment</button>
+        <p>{this.state.counter}</p>
+        <button onClick={this.handleDecrement}>Decrement</button>
+      </div>
+    );
+  }
+}
+
+export default CounterApp;
