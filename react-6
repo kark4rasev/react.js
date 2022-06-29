@@ -1,0 +1,214 @@
+import React from 'react';
+import ReactDom from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import { store } from '../react5/redux/reducers/messagesReducer/configureStore';
+import App from './App';
+import {store} from "./redux/configureStore";
+
+const root = ReactDOM.createRoot(document.getElementById(elementid:'root'));
+root.render(
+    <BrowserRouter>
+        <Provider store={store}>
+            <React.StrictMode>
+                <App />
+            </React.StrictMode>
+        </Provider>
+    </BrowserRouter>
+);
+
+
+import { GET_MESSAGES } from "../actionType"
+
+const initialState ={
+    chats:[
+        {
+            id: 1,
+            name: 'Anton'
+        }
+        {
+            id: 2,
+            name: 'Andrey'
+        }
+    ]
+}
+
+export const chatsReducer = (state = initialState, action) =>{
+    switch (action.type) {
+        case GET_MESSAGES:
+            return {
+                ...state,
+                chats: state.chats
+            }
+
+        default:
+            return state
+    }
+}
+
+
+import {Routes, Rout} from 'react-router-dom';
+import NotFound from './pages/NotFound';
+
+function App() {
+    return(
+        <Routes>
+            <Route path={'/'} element={<Chats/>}/>
+                <Route path={'/messages/:id'} element={<Messages/>}/>
+                <Route path={'*'} element={<NotFound/>}/>
+        </Routes>
+    );
+}
+
+export default App;
+
+
+import React from 'react';
+
+const NotFound = () => {
+    return (
+        <div>
+            Page not found
+        </div>
+    );
+};
+
+export default NotFound;
+
+
+import { DELETE_MESSAGE,ADD_MESSAGE } from "../actionType"
+
+const initialState = {
+    messages:[
+        {
+            id: 1,
+            title: 'where are you?',
+            chatId: 1
+        },
+        {
+            id: 2,
+            title: 'ok',
+            chatId: 2
+        }
+        
+    ]
+}
+
+export const messagesReducer = (state:{messages:any[]}=initialState, action) =>{
+    switch(action.type) {
+        case DELETE_MESSAGE:
+            return {
+                ...state,
+                messages:state.messages.filter((item:{...}) => item.id !==action.payload)
+            }
+        case ADD_MESSAGE:
+            return {
+                ...state,
+                messages:[...state.messages,action.payload]
+            }
+
+
+        default:
+            return state
+    }
+}
+
+
+import React from 'react';
+import { useSelector } from 'react-redux';
+import {getChatsSelector} from "../redux/reducers/chatReducer/chatsSelector";
+import { Link } from 'react-router-dom';
+
+const Chats = () => {
+    const chats =useSelector(getChatsSelector);
+    return (
+        <div>
+            Chats
+            {chats.map((chat) =>(
+                <Link key={chat.id} to={`/messages/${chat.id}`}>
+                    {chat.name}
+                </Link>
+            ))}
+        </div>
+    );
+};
+
+export default Chats;
+
+
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router';
+
+const Messages = () => {
+    const {id} = useParams();
+    const [title,setTitle] = useState(initialState:'');
+    const ChatMessages = useSelector(getMessagesSelector);
+    const dispatch = useDispatch;
+
+    const messages = ChatMessages.filter((message) => {
+        if (!id) return null;
+
+        return message.chatId === Number(id)
+    })
+
+    const deleteMessage = () => {
+            dispatch(action:{
+                type:DELETE_MESSAGE,
+                payload:id
+            })
+    }
+
+    const addMessage= () => {
+        const obj = {
+            id: Math.random(),
+            title:title,
+            chatId: Number(id)
+        }
+        dispatch(action: {
+            type: ADD_MESSAGE,
+            payload: obj
+        })
+    }
+
+    return (
+        <div>
+            Messages
+            <input value={title} onChange={(e:ChangeEvent<HTMLInputElement>)=>setTitle(e.target.value)}/>
+            <button onClick={addMessage}>+</button>
+            {messages.map((message)=>(
+                <div key={message.id}>
+                <p>{message.title}</p>
+                <button onClick={() =>deleteMessage(message.id)}>x</button>
+                </div>
+            ))}
+        </div>
+    );
+};
+
+export default Messages;
+
+
+export const getChatsSelector = state => state.chats.chats
+
+
+export const getMessagesSelector = state => state.messages.messages
+
+
+export const GET_MESSAGES = 'GET_MESSAGES';
+export const GET_CHATS = 'GET_CHATS';
+export const DELETE_MESSAGE = 'DELETE_MESSAGE';
+export const ADD_MESSAGE = 'ADD_MESSAGE';
+
+
+import{createStore} from "redux";
+import { chatsReducer } from "../chatsReducer/chatsReducer";
+import { messagesReducer } from "./messagesReducer";
+
+
+const rootReducer = combineReducer(reducers:{
+    chats:chatsReducer,
+    messages:messagesReducer
+})
+
+
+export const store = createStore(rootReducer)
