@@ -1,0 +1,157 @@
+import Todos from './Todos'
+
+function App () {
+    return (
+        <div>
+            <Todos />
+        </div>
+    );
+}
+
+export default App;
+
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { loadTodos } from './redux/todosReducer/todosReducer';
+import { getErrorSelector, getLoadingSelector, getTodosSelector } from './redux/todosReducer/todosSelector';
+
+const Todos = () => {
+    const todos = useSelector(getTodosSelector);
+    const loading = useSelector(getLoadingSelector);
+    const error = useSelector(getErrorSelector);
+    const dispatch= useDispatch();
+
+    useEffect(effect: () =>{
+        dispatch(loadTodos())
+    }, deps:[])
+
+
+
+    const offloadTodos = () => {
+        dispatch(loadTodos())
+    }
+
+
+    if (loading) {
+        return (
+            <div>
+                идет загрузка...
+            </div>
+        )
+    }
+
+    if (error) {
+        return(
+            <div>
+                произошла ошибка
+                <button onClick={offloadTodos}>обновить</button>
+            </div>
+        )
+    }
+    return (
+        <div>
+            {todos.map((todo) =>(
+                <div key={todo.id}>
+                    <h5>{todo.title}</h5>
+                </div>
+            ))}
+        </div>
+    );
+};
+
+export default Todos;
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from "./components/App";
+
+const root = ReactDOM.createRoot(document.getElementById(elementid:'root'));
+root.render(
+        <Provider store={store}>
+            <React.StrictMode>
+                <App />
+            </React.StrictMode>
+      </Provider>
+);
+
+import {applyMiddleware, combineReducers, createStore} from "redux";
+import { todosReducer } from "./todosReducer/todosReducer";
+import thunk from "redux-thunk";
+
+const reducer = combineReducers(reducers:{
+    todos:todosReducer
+})
+
+export const store = createStore(reducer,applyMiddleware(thunk))
+
+import { error_todos, get_todos, loading_todos } from "./actions";
+import { LOADING } from "./actionsTypes";
+
+const initialState = {
+    todos:[],
+    loading: false,
+    error: null
+};
+
+export const todosReducer = (state:{todos:any[]} = initialState, action) => {
+    switch (action.type){
+        case GET:
+            return {
+                ...state,
+                todos:action.payload,
+                loading: false
+            }
+        case LOADING:
+            return {
+                ...state,
+                loading: true
+
+            }
+        case ERROR:
+            return {
+                ...state,
+                error: action.payload,
+                loading: false
+            }
+
+        default:
+            return state
+    }
+}
+
+export const loadTodos = () => {
+    return async dispatch => {
+        dispatch(loading_todos())
+        try{
+            const response = await fetch(input:'https://jsonplaceholder.typicode.com/todos')
+            const json = await response.json()
+            dispatch(get_todos(json))
+        }catch(e){
+            dispatch(error_todos(e))
+        }
+    }
+}
+
+export const getTodosSelector = state => state.todos.todos;
+export const getLoadingSelector = state => state.todos.loading;
+export const getErrorSelector = state => state.todos.error;
+
+import { ERROR, GET_TODOS, LOADING } from "./actionsTypes";
+
+export const get_todos = (data) => ({
+    type: GET_TODOS,
+    payload: data
+})
+
+export const loading_todos = () => ({
+    type: LOADING
+})
+
+export const error_todos = (err) => ({
+    type: ERROR,
+    payload:err.toString()
+})
+
+export const GET_TODOS = 'GET_TODOS';
+export const LOADING = 'LOADING';
+export const ERROR = 'ERROR';
